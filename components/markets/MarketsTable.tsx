@@ -1,7 +1,18 @@
-import type { Market } from "@/types/market";
+"use client";
+
+import Link from "next/link";
+
+import type {
+  Market,
+  MarketSortDirection,
+  MarketSortField,
+} from "@/types/market";
 
 type MarketsTableProps = {
   markets: Market[];
+  sort: MarketSortField;
+  direction: MarketSortDirection;
+  onSort: (field: MarketSortField) => void;
 };
 
 const volumeFormatter = new Intl.NumberFormat("en-US", {
@@ -19,27 +30,128 @@ const timeFormatter = new Intl.DateTimeFormat("en-US", {
   timeZoneName: "short",
 });
 
-export function MarketsTable({ markets }: MarketsTableProps) {
+function SortHeader({
+  field,
+  label,
+  align,
+  sort,
+  direction,
+  onSort,
+}: {
+  field: MarketSortField;
+  label: string;
+  align: "left" | "right";
+  sort: MarketSortField;
+  direction: MarketSortDirection;
+  onSort: (field: MarketSortField) => void;
+}) {
+  const active = sort === field;
+  const indicator = active ? (direction === "asc" ? " ↑" : " ↓") : "";
+
+  return (
+    <button
+      type="button"
+      onClick={() => onSort(field)}
+      className={`inline-flex items-center gap-1 transition-colors hover:text-slate-800 ${
+        align === "right" ? "w-full justify-end" : ""
+      }`}
+    >
+      {label}
+      <span aria-hidden="true">{indicator}</span>
+    </button>
+  );
+}
+
+function sortAria(
+  field: MarketSortField,
+  sort: MarketSortField,
+  direction: MarketSortDirection,
+): "ascending" | "descending" | "none" {
+  if (field !== sort) {
+    return "none";
+  }
+  return direction === "asc" ? "ascending" : "descending";
+}
+
+export function MarketsTable({
+  markets,
+  sort,
+  direction,
+  onSort,
+}: MarketsTableProps) {
   return (
     <div className="overflow-x-auto border-y border-slate-200">
       <table className="w-full min-w-[780px] border-collapse text-left">
         <thead>
           <tr className="text-xs uppercase tracking-[0.12em] text-slate-500">
-            <th className="py-4 pr-6 font-medium">Market Name</th>
+            <th
+              className="py-4 pr-6 font-medium"
+              aria-sort={sortAria("name", sort, direction)}
+            >
+              <SortHeader
+                field="name"
+                label="Market Name"
+                align="left"
+                sort={sort}
+                direction={direction}
+                onSort={onSort}
+              />
+            </th>
             <th className="px-6 py-4 font-medium">Category</th>
-            <th className="px-6 py-4 text-right font-medium">Probability</th>
-            <th className="px-6 py-4 text-right font-medium">Volume</th>
-            <th className="py-4 pl-6 text-right font-medium">Updated Time</th>
+            <th
+              className="px-6 py-4 text-right font-medium"
+              aria-sort={sortAria("probability", sort, direction)}
+            >
+              <SortHeader
+                field="probability"
+                label="Probability"
+                align="right"
+                sort={sort}
+                direction={direction}
+                onSort={onSort}
+              />
+            </th>
+            <th
+              className="px-6 py-4 text-right font-medium"
+              aria-sort={sortAria("volume", sort, direction)}
+            >
+              <SortHeader
+                field="volume"
+                label="Volume"
+                align="right"
+                sort={sort}
+                direction={direction}
+                onSort={onSort}
+              />
+            </th>
+            <th
+              className="py-4 pl-6 text-right font-medium"
+              aria-sort={sortAria("updatedAt", sort, direction)}
+            >
+              <SortHeader
+                field="updatedAt"
+                label="Updated Time"
+                align="right"
+                sort={sort}
+                direction={direction}
+                onSort={onSort}
+              />
+            </th>
           </tr>
         </thead>
         <tbody>
           {markets.map((market) => (
             <tr
-              key={market.name}
+              key={market.id}
               className="border-t border-slate-200 text-sm text-slate-700 transition-colors duration-200 hover:bg-white/70"
             >
               <td className="py-5 pr-6 font-medium text-slate-950">
-                {market.name}
+                <Link
+                  href={`/dashboard/markets/${market.id}`}
+                  className="transition-colors hover:text-cyan-800 focus:outline-none focus:ring-2 focus:ring-cyan-600 focus:ring-offset-2"
+                >
+                  {market.name}
+                </Link>
               </td>
               <td className="px-6 py-5">{market.category}</td>
               <td className="px-6 py-5 text-right font-mono text-slate-950">
