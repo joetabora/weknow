@@ -51,10 +51,13 @@ jobs:
           fi
           ORIGIN="$(node -e "console.log(new URL(process.argv[1]).origin)" "$URL")"
           echo "Testing connectivity to: ${ORIGIN}"
-          curl -fsS -I -o /dev/null -w "http_status=%{http_code}\n" "${ORIGIN}" || {
+          # The Supabase root returns 404, which still proves the host is reachable.
+          # Do not use curl -f here; only a real connection failure should fail this step.
+          HTTP_STATUS="$(curl -sS -I -o /dev/null -w "%{http_code}" "${ORIGIN}")" || {
             echo "ERROR: curl could not reach Supabase. Check the Project URL secret and that the project is not paused."
             exit 1
           }
+          echo "http_status=${HTTP_STATUS}"
           echo "Supabase host reachable."
 
       - name: Run collector ingestion

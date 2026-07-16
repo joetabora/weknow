@@ -36,14 +36,12 @@ async function preflightSupabase() {
 
   const origin = new URL(url).origin;
 
+  // Any HTTP response proves the host is reachable. The Supabase root returns
+  // 404, so do not treat non-2xx as a failure here — only a thrown fetch error
+  // (DNS/TLS/connection) indicates the host is unreachable.
   console.log(`Preflight: HEAD ${origin}`);
   const response = await fetch(origin, { method: "HEAD" });
   console.log(`Preflight status: ${response.status} ${response.statusText}`);
-  if (!response.ok) {
-    throw new Error(
-      `Supabase host responded with ${response.status} ${response.statusText}`,
-    );
-  }
 
   // Force client construction so URL/key validation runs early.
   getSupabaseAdminClient();
