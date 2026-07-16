@@ -38,5 +38,25 @@ export type MarketMover = {
   previousCapturedAt: string;
 };
 
+export type WinningOutcome = "yes" | "no";
+
+export type ResolutionResult = "Correct" | "Incorrect";
+
+export type ResolvedMarket = {
+  id: string;
+  marketId: string;
+  title: string;
+  finalYesProbability: number;
+  winningOutcome: WinningOutcome;
+  result: ResolutionResult;
+  resolvedAt: string;
+};
+
+export type ResolutionSummary = {
+  total: number;
+  correct: number;
+  incorrect: number;
+};
+
 export type MarketSortField = "name" | "probability" | "volume" | "updatedAt";
 export type MarketSortDirection = "asc" | "desc";

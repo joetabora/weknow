@@ -61,6 +61,36 @@ export type MarketSnapshotUpdate = {
   captured_at?: string;
 };
 
+export type MarketResolutionRow = {
+  id: string;
+  market_id: string;
+  resolved_at: string;
+  winning_outcome: "yes" | "no";
+  final_yes_price: number;
+  final_no_price: number;
+  created_at: string;
+};
+
+export type MarketResolutionInsert = {
+  id?: string;
+  market_id: string;
+  resolved_at: string;
+  winning_outcome: "yes" | "no";
+  final_yes_price: number;
+  final_no_price: number;
+  created_at?: string;
+};
+
+export type MarketResolutionUpdate = {
+  id?: string;
+  market_id?: string;
+  resolved_at?: string;
+  winning_outcome?: "yes" | "no";
+  final_yes_price?: number;
+  final_no_price?: number;
+  created_at?: string;
+};
+
 export type Database = {
   public: {
     Tables: {
@@ -79,6 +109,20 @@ export type Database = {
             foreignKeyName: "market_snapshots_market_id_fkey";
             columns: ["market_id"];
             isOneToOne: false;
+            referencedRelation: "markets";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      market_resolutions: {
+        Row: MarketResolutionRow;
+        Insert: MarketResolutionInsert;
+        Update: MarketResolutionUpdate;
+        Relationships: [
+          {
+            foreignKeyName: "market_resolutions_market_id_fkey";
+            columns: ["market_id"];
+            isOneToOne: true;
             referencedRelation: "markets";
             referencedColumns: ["id"];
           },
