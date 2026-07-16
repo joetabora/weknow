@@ -6,7 +6,7 @@ market APIs or include prediction, AI, or trading features.
 
 ## Requirements
 
-- Node.js 20 or newer
+- Node.js 22 or newer
 - npm
 - A Supabase project
 
