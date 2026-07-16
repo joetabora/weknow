@@ -25,12 +25,16 @@ market APIs or include prediction, AI, or trading features.
    ```
 
 3. In the Supabase dashboard, open **Project Settings → API** and add the
-   project URL and anon key to `.env.local`:
+   project URL, anon key, and service role key to `.env.local`:
 
    ```dotenv
    NEXT_PUBLIC_SUPABASE_URL=https://your-project-ref.supabase.co
    NEXT_PUBLIC_SUPABASE_ANON_KEY=your-supabase-anon-key
+   SUPABASE_SERVICE_ROLE_KEY=your-supabase-service-role-key
    ```
+
+   The service role key is required for ingestion writes only. Never expose it
+   in client-side code or commit it.
 
 4. Set up the database (see below).
 
@@ -64,6 +68,30 @@ Note: the Phase 2 files [`lib/database/schema.sql`](lib/database/schema.sql) and
 [`lib/database/seed.sql`](lib/database/seed.sql) are superseded. The dashboard
 query in `lib/database/markets.ts` still expects the old Phase 2 columns and
 will need a follow-up UI update after this migration is applied.
+
+## Market ingestion
+
+The ingestion pipeline fetches markets from a collector, validates them, upserts
+`markets` rows, and inserts `market_snapshots`.
+
+Current collector: **mock only** (`collectors/mock`). No Kalshi or other live
+API integrations yet.
+
+1. Apply the migration and set `SUPABASE_SERVICE_ROLE_KEY` in `.env.local`.
+2. Run:
+
+   ```bash
+   npm run ingest
+   ```
+
+This uses `MockMarketCollector` test data (clearly labeled `mock-*` external
+IDs). Re-running upserts the same markets by `external_id` and adds new
+snapshot rows.
+
+Pipeline entry points:
+
+- Interface: [`collectors/types.ts`](collectors/types.ts)
+- Runner: [`scripts/ingest.ts`](scripts/ingest.ts) → [`lib/ingestion/run.ts`](lib/ingestion/run.ts)
 
 ## Routes
 
