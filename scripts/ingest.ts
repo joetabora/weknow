@@ -1,9 +1,27 @@
+import { KalshiMarketCollector } from "@/collectors/kalshi";
 import { MockMarketCollector } from "@/collectors/mock";
+import type { MarketCollector } from "@/collectors/types";
 import {
   formatUnknownError,
   getSupabaseAdminClient,
 } from "@/lib/database/supabase-admin";
 import { runIngestion } from "@/lib/ingestion/run";
+
+function createCollector(): MarketCollector {
+  const source = (process.env.COLLECTOR_SOURCE ?? "mock").trim().toLowerCase();
+
+  if (source === "mock") {
+    return new MockMarketCollector();
+  }
+
+  if (source === "kalshi") {
+    return new KalshiMarketCollector();
+  }
+
+  throw new Error(
+    `Unknown COLLECTOR_SOURCE="${source}". Use "mock" or "kalshi".`,
+  );
+}
 
 async function preflightSupabase() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL?.trim().replace(
@@ -39,7 +57,10 @@ async function main() {
     throw new Error(`Supabase preflight failed: ${formatUnknownError(error)}`);
   }
 
-  const collector = new MockMarketCollector();
+  const source = (process.env.COLLECTOR_SOURCE ?? "mock").trim().toLowerCase();
+  console.log(`Using collector source: ${source}`);
+
+  const collector = createCollector();
   const result = await runIngestion(collector);
 
   console.log(

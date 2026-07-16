@@ -8,7 +8,9 @@
     "start": "next start",
     "lint": "next lint",
     "ingest": "tsx --env-file=.env.local scripts/ingest.ts",
-    "ingest:ci": "tsx scripts/ingest.ts"
+    "ingest:ci": "tsx scripts/ingest.ts",
+    "ingest:kalshi": "COLLECTOR_SOURCE=kalshi tsx --env-file=.env.local scripts/ingest.ts",
+    "test:collectors": "tsx --test collectors/**/*.test.ts"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.110.7",

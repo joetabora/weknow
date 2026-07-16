@@ -1,8 +1,9 @@
 # weknow
 
 A private prediction market research dashboard. Markets are stored in Supabase
-PostgreSQL (`markets` and `market_snapshots`). It does not connect to external
-market APIs or include prediction, AI, or trading features.
+PostgreSQL (`markets` and `market_snapshots`). It collects read-only market data
+from Kalshi's public API for research. It does not include prediction, AI, or
+trading features.
 
 ## Requirements
 
@@ -74,29 +75,74 @@ will need a follow-up UI update after this migration is applied.
 The ingestion pipeline fetches markets from a collector, validates them, upserts
 `markets` rows, and inserts `market_snapshots`.
 
-Current collector: **mock only** (`collectors/mock`). No Kalshi or other live
-API integrations yet.
+### Collectors
 
-1. Apply the migration and set `SUPABASE_SERVICE_ROLE_KEY` in `.env.local`.
-2. Run:
+| Source | Class | Notes |
+| --- | --- | --- |
+| `mock` (default local) | `MockMarketCollector` | Labeled sample research rows |
+| `kalshi` | `KalshiMarketCollector` | Official public Kalshi market data |
 
-   ```bash
-   npm run ingest
-   ```
+Select the collector with `COLLECTOR_SOURCE=mock|kalshi`.
 
-This uses `MockMarketCollector` test data (clearly labeled `mock-*` external
-IDs). Re-running upserts the same markets by `external_id` and adds new
-snapshot rows.
+Local commands:
+
+```bash
+# mock data (default)
+npm run ingest
+
+# real Kalshi market data (read-only public endpoints, no API key)
+npm run ingest:kalshi
+```
+
+Collector tests:
+
+```bash
+npm run test:collectors
+```
+
+### Kalshi (official, read-only)
+
+Verified official documentation:
+
+- [Market Data Quick Start](https://docs.kalshi.com/getting_started/quick_start_market_data)
+- [Get Events](https://docs.kalshi.com/api-reference/events/get-events)
+- [Get Series](https://docs.kalshi.com/api-reference/market/get-series)
+- [Pagination](https://docs.kalshi.com/getting_started/pagination)
+
+Production base URL: `https://external-api.kalshi.com/trade-api/v2`
+
+Endpoints used (public, no authentication, no trading):
+
+1. `GET /events?status=open&with_nested_markets=true&limit=200` (cursor pagination)
+2. `GET /series/{series_ticker}` (series category)
+
+Mapping into `CollectedMarket`:
+
+| Internal field | Kalshi field |
+| --- | --- |
+| `externalId` | market `ticker` |
+| `title` | event `title` + market `yes_sub_title` when needed |
+| `description` | market `rules_primary` |
+| `category` | series `category` |
+| `status` | market `status` |
+| `yesPrice` | `yes_bid_dollars` |
+| `noPrice` | `no_bid_dollars` |
+| `volume` | `volume_fp` |
+| `liquidity` | `0` (Kalshi documents `liquidity_dollars` as deprecated and always `"0.0000"`) |
+
+No trading, portfolio, orderbook, authentication, or API keys are implemented.
 
 Pipeline entry points:
 
 - Interface: [`collectors/types.ts`](collectors/types.ts)
+- Kalshi collector: [`collectors/kalshi`](collectors/kalshi)
 - Runner: [`scripts/ingest.ts`](scripts/ingest.ts) → [`lib/ingestion/run.ts`](lib/ingestion/run.ts)
 
 ## Scheduled collection
 
 Hourly collection runs via GitHub Actions
-([`.github/workflows/collector.yml`](.github/workflows/collector.yml)).
+([`.github/workflows/collector.yml`](.github/workflows/collector.yml)) using
+`COLLECTOR_SOURCE=kalshi`.
 
 1. In the GitHub repo, open **Settings → Secrets and variables → Actions**.
 2. Add these repository secrets:
@@ -105,8 +151,8 @@ Hourly collection runs via GitHub Actions
 3. The workflow runs every hour (UTC). To test manually, open
    **Actions → Collector → Run workflow**.
 
-The scheduled job still uses `MockMarketCollector` until a live collector is
-added. On failure, the workflow logs a placeholder notification message (no
+No Kalshi API key secret is required for public market-data endpoints. On
+failure, the workflow logs a placeholder notification message (no
 Slack/email/webhook wired yet).
 
 If ingestion fails with `TypeError: fetch failed`:
