@@ -10,6 +10,7 @@ const navigation = [
   { href: "/dashboard/markets", label: "Markets" },
   { href: "/dashboard/movers", label: "Movers" },
   { href: "/dashboard/resolved", label: "Resolved" },
+  { href: "/dashboard/calibration", label: "Calibration" },
 ];
 
 export function DashboardShell({ children }: DashboardShellProps) {

@@ -58,5 +58,14 @@ export type ResolutionSummary = {
   incorrect: number;
 };
 
+export type CalibrationBucket = {
+  label: string;
+  minProbability: number;
+  maxProbability: number;
+  marketCount: number;
+  averageImpliedProbability: number | null;
+  actualYesRate: number | null;
+};
+
 export type MarketSortField = "name" | "probability" | "volume" | "updatedAt";
 export type MarketSortDirection = "asc" | "desc";

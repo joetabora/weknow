@@ -11,7 +11,8 @@
     "ingest:ci": "tsx scripts/ingest.ts",
     "ingest:kalshi": "COLLECTOR_SOURCE=kalshi tsx --env-file=.env.local scripts/ingest.ts",
     "resolve": "tsx --env-file=.env.local scripts/record-resolution.ts",
-    "test:collectors": "tsx --test collectors/**/*.test.ts"
+    "test:collectors": "tsx --test collectors/**/*.test.ts",
+    "test:lib": "tsx --test lib/**/*.test.ts"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.110.7",
