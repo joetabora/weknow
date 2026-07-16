@@ -1,4 +1,5 @@
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
+import ws from "ws";
 
 import type { Database } from "@/types/database";
 
@@ -18,6 +19,10 @@ export function getSupabaseAdminClient(): SupabaseClient<Database> {
     auth: {
       persistSession: false,
       autoRefreshToken: false,
+    },
+    realtime: {
+      // Provide an explicit WebSocket impl so Node < 22 (and CI) can create the client.
+      transport: ws as unknown as typeof WebSocket,
     },
   });
 
