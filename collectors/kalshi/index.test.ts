@@ -75,6 +75,7 @@ describe("KalshiMarketCollector", () => {
     const collector = new KalshiMarketCollector({
       baseUrl: "https://example.test/trade-api/v2",
       fetchImpl,
+      requestPaceMs: 0,
     });
 
     const markets = await collector.fetchMarkets();
@@ -113,6 +114,7 @@ describe("KalshiMarketCollector", () => {
     const collector = new KalshiMarketCollector({
       baseUrl: "https://example.test/trade-api/v2",
       fetchImpl,
+      requestPaceMs: 0,
     });
 
     await assert.rejects(
@@ -121,7 +123,65 @@ describe("KalshiMarketCollector", () => {
     );
   });
 
-  it("surfaces actionable HTTP errors", async () => {
+  it("retries after HTTP 429 and eventually succeeds", async () => {
+    let eventRequests = 0;
+
+    const fetchImpl: typeof fetch = async (input) => {
+      const url = String(input);
+
+      if (url.includes("/events")) {
+        eventRequests += 1;
+        if (eventRequests === 1) {
+          return new Response(
+            JSON.stringify({
+              error: { code: "too_many_requests", message: "too many requests" },
+            }),
+            {
+              status: 429,
+              statusText: "Too Many Requests",
+              headers: { "Content-Type": "application/json" },
+            },
+          );
+        }
+
+        return jsonResponse({
+          events: [
+            {
+              event_ticker: "KXTEST-1",
+              series_ticker: "KXSERIES",
+              title: "First event",
+              markets: [sampleMarket("KXTEST-1-A")],
+            },
+          ],
+          cursor: "",
+        });
+      }
+
+      if (url.includes("/series/KXSERIES")) {
+        return jsonResponse({
+          series: {
+            ticker: "KXSERIES",
+            category: "Economics",
+          },
+        });
+      }
+
+      throw new Error(`Unexpected URL in test: ${url}`);
+    };
+
+    const collector = new KalshiMarketCollector({
+      baseUrl: "https://example.test/trade-api/v2",
+      fetchImpl,
+      requestPaceMs: 0,
+      maxRetries: 2,
+    });
+
+    const markets = await collector.fetchMarkets();
+    assert.equal(markets.length, 1);
+    assert.equal(eventRequests, 2);
+  });
+
+  it("fails after exhausting 429 retries", async () => {
     const fetchImpl: typeof fetch = async () =>
       new Response("rate limited", {
         status: 429,
@@ -131,11 +191,13 @@ describe("KalshiMarketCollector", () => {
     const collector = new KalshiMarketCollector({
       baseUrl: "https://example.test/trade-api/v2",
       fetchImpl,
+      requestPaceMs: 0,
+      maxRetries: 1,
     });
 
     await assert.rejects(
       () => collector.fetchMarkets(),
-      /Kalshi request failed \(429 Too Many Requests\)/,
+      /Kalshi rate limit exceeded after 1 retries/,
     );
   });
 });
