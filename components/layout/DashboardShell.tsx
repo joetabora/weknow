@@ -10,6 +10,7 @@ const navigation = [
   { href: "/dashboard/markets", label: "Markets" },
   { href: "/dashboard/movers", label: "Movers" },
   { href: "/dashboard/watchlist", label: "Watchlist" },
+  { href: "/dashboard/journal", label: "Journal" },
   { href: "/dashboard/resolved", label: "Resolved" },
   { href: "/dashboard/calibration", label: "Calibration" },
 ];

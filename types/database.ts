@@ -115,6 +115,39 @@ export type MarketWatchlistUpdate = {
   notes?: string;
 };
 
+export type MarketJournalEntryRow = {
+  id: string;
+  market_id: string;
+  created_at: string;
+  updated_at: string;
+  thesis: string;
+  confidence_level: "Low" | "Medium" | "High";
+  expected_probability: number;
+  status: "Open" | "Resolved" | "Archived";
+};
+
+export type MarketJournalEntryInsert = {
+  id?: string;
+  market_id: string;
+  created_at?: string;
+  updated_at?: string;
+  thesis: string;
+  confidence_level: "Low" | "Medium" | "High";
+  expected_probability: number;
+  status?: "Open" | "Resolved" | "Archived";
+};
+
+export type MarketJournalEntryUpdate = {
+  id?: string;
+  market_id?: string;
+  created_at?: string;
+  updated_at?: string;
+  thesis?: string;
+  confidence_level?: "Low" | "Medium" | "High";
+  expected_probability?: number;
+  status?: "Open" | "Resolved" | "Archived";
+};
+
 export type Database = {
   public: {
     Tables: {
@@ -159,6 +192,20 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "market_watchlist_market_id_fkey";
+            columns: ["market_id"];
+            isOneToOne: false;
+            referencedRelation: "markets";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      market_journal_entries: {
+        Row: MarketJournalEntryRow;
+        Insert: MarketJournalEntryInsert;
+        Update: MarketJournalEntryUpdate;
+        Relationships: [
+          {
+            foreignKeyName: "market_journal_entries_market_id_fkey";
             columns: ["market_id"];
             isOneToOne: false;
             referencedRelation: "markets";

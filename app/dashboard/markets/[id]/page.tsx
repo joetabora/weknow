@@ -2,15 +2,22 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
+import { JournalEntryForm } from "@/components/journal/JournalEntryForm";
+import { JournalEntryList } from "@/components/journal/JournalEntryList";
 import { PriceChart } from "@/components/markets/PriceChart";
 import { SnapshotHistoryTable } from "@/components/markets/SnapshotHistoryTable";
 import { WatchlistToggle } from "@/components/watchlist/WatchlistToggle";
+import { getJournalEntriesForMarket } from "@/lib/database/journal";
 import {
   getMarketById,
   getMarketPriceHistory,
 } from "@/lib/database/markets";
 import { isMarketWatched } from "@/lib/database/watchlist";
-import type { MarketDetail, MarketPricePoint } from "@/types/market";
+import type {
+  JournalEntry,
+  MarketDetail,
+  MarketPricePoint,
+} from "@/types/market";
 
 type MarketDetailPageProps = {
   params: Promise<{ id: string }>;
@@ -58,14 +65,16 @@ export default async function MarketDetailPage({
   let loadError: string | null = null;
   let market: MarketDetail | null = null;
   let history: MarketPricePoint[] = [];
+  let journalEntries: JournalEntry[] = [];
   let watched = false;
 
   try {
     market = await getMarketById(id);
     if (market) {
-      [history, watched] = await Promise.all([
+      [history, watched, journalEntries] = await Promise.all([
         getMarketPriceHistory(id),
         isMarketWatched(id),
+        getJournalEntriesForMarket(id),
       ]);
     }
   } catch (error) {
@@ -181,11 +190,33 @@ export default async function MarketDetailPage({
             <PriceChart points={history} />
           </div>
 
-          <div className="space-y-4">
+          <div className="mb-10 space-y-4">
             <h2 className="font-display text-xl font-semibold tracking-[-0.03em] text-slate-950">
               Snapshot history
             </h2>
             <SnapshotHistoryTable points={history} />
+          </div>
+
+          <div className="space-y-6">
+            <div>
+              <h2 className="font-display text-xl font-semibold tracking-[-0.03em] text-slate-950">
+                Research Journal
+              </h2>
+              <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-500">
+                Record your reasoning before the market resolves. Your estimate
+                is stored separately from the Kalshi price shown for comparison.
+              </p>
+            </div>
+            <JournalEntryForm
+              marketId={market.id}
+              kalshiYesProbability={market.yesProbability}
+            />
+            <div className="space-y-3">
+              <h3 className="text-sm font-medium uppercase tracking-[0.12em] text-slate-500">
+                Previous entries
+              </h3>
+              <JournalEntryList entries={journalEntries} />
+            </div>
           </div>
         </>
       ) : null}

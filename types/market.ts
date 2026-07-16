@@ -77,5 +77,21 @@ export type WatchlistItem = {
   notes: string;
 };
 
+export type JournalConfidence = "Low" | "Medium" | "High";
+
+export type JournalStatus = "Open" | "Resolved" | "Archived";
+
+export type JournalEntry = {
+  id: string;
+  marketId: string;
+  marketTitle?: string;
+  thesis: string;
+  confidenceLevel: JournalConfidence;
+  expectedProbability: number;
+  status: JournalStatus;
+  createdAt: string;
+  updatedAt: string;
+};
+
 export type MarketSortField = "name" | "probability" | "volume" | "updatedAt";
 export type MarketSortDirection = "asc" | "desc";
