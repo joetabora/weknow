@@ -1,8 +1,8 @@
 # weknow
 
-A private prediction market research dashboard. Phase 2 displays markets stored
-in Supabase PostgreSQL. It does not connect to external market APIs or include
-prediction, AI, or trading features.
+A private prediction market research dashboard. Markets are stored in Supabase
+PostgreSQL (`markets` and `market_snapshots`). It does not connect to external
+market APIs or include prediction, AI, or trading features.
 
 ## Requirements
 
@@ -44,15 +44,26 @@ prediction, AI, or trading features.
 
 ## Database setup
 
-Run these files in the Supabase SQL editor, in order:
+Apply the migration in
+[`supabase/migrations/20260716140000_create_markets_and_snapshots.sql`](supabase/migrations/20260716140000_create_markets_and_snapshots.sql):
 
-1. [`lib/database/schema.sql`](lib/database/schema.sql) — creates the `markets`
-   table and a public read policy (RLS).
-2. [`lib/database/seed.sql`](lib/database/seed.sql) — inserts clearly labeled
-   sample research rows (not live market data).
+- With the Supabase CLI: `supabase db push` (or run the SQL against your linked project)
+- Or paste the migration contents into the Supabase SQL editor and run it
 
-The app reads markets through `getMarkets()` in `lib/database/markets.ts` using
-the Supabase client in `lib/database/supabase.ts`.
+This creates:
+
+- `markets` — id, external_id, title, description, category, status, timestamps
+- `market_snapshots` — prices, volume, liquidity, captured_at (FK to markets)
+
+Indexes: unique `markets.external_id`, `market_snapshots.market_id`,
+`market_snapshots.captured_at`.
+
+TypeScript row types live in [`types/database.ts`](types/database.ts).
+
+Note: the Phase 2 files [`lib/database/schema.sql`](lib/database/schema.sql) and
+[`lib/database/seed.sql`](lib/database/seed.sql) are superseded. The dashboard
+query in `lib/database/markets.ts` still expects the old Phase 2 columns and
+will need a follow-up UI update after this migration is applied.
 
 ## Routes
 
