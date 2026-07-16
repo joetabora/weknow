@@ -17,15 +17,15 @@ async function preflightSupabase() {
   }
 
   const origin = new URL(url).origin;
-  const healthUrl = `${origin}/auth/v1/health`;
 
-  console.log(`Preflight: GET ${healthUrl}`);
-  const response = await fetch(healthUrl, {
-    headers: {
-      apikey: key,
-    },
-  });
+  console.log(`Preflight: HEAD ${origin}`);
+  const response = await fetch(origin, { method: "HEAD" });
   console.log(`Preflight status: ${response.status} ${response.statusText}`);
+  if (!response.ok) {
+    throw new Error(
+      `Supabase host responded with ${response.status} ${response.statusText}`,
+    );
+  }
 
   // Force client construction so URL/key validation runs early.
   getSupabaseAdminClient();

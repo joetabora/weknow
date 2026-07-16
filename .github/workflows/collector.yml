@@ -50,14 +50,12 @@ jobs:
             exit 1
           fi
           ORIGIN="$(node -e "console.log(new URL(process.argv[1]).origin)" "$URL")"
-          echo "GET ${ORIGIN}/auth/v1/health"
-          curl -fsS -o /tmp/supabase-health.json -w "http_status=%{http_code}\n" "${ORIGIN}/auth/v1/health" || {
+          echo "Testing connectivity to: ${ORIGIN}"
+          curl -fsS -I -o /dev/null -w "http_status=%{http_code}\n" "${ORIGIN}" || {
             echo "ERROR: curl could not reach Supabase. Check the Project URL secret and that the project is not paused."
             exit 1
           }
-          echo "Supabase health endpoint reachable."
-          cat /tmp/supabase-health.json
-          echo
+          echo "Supabase host reachable."
 
       - name: Run collector ingestion
         env:
