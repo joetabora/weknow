@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
+import { ContractCalculator } from "@/components/markets/ContractCalculator";
 import { JournalEntryForm } from "@/components/journal/JournalEntryForm";
 import { JournalEntryList } from "@/components/journal/JournalEntryList";
 import { PriceChart } from "@/components/markets/PriceChart";
@@ -182,6 +183,22 @@ export default async function MarketDetailPage({
               </dd>
             </div>
           </dl>
+
+          <div className="mb-10 space-y-4">
+            <div>
+              <h2 className="font-display text-xl font-semibold tracking-[-0.03em] text-slate-950">
+                Contract calculator
+              </h2>
+              <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-500">
+                Explore hypothetical YES or NO outcomes at the current market
+                price. Calculator only — no trading.
+              </p>
+            </div>
+            <ContractCalculator
+              defaultYesPrice={market.yesProbability / 100}
+              defaultNoPrice={market.noProbability / 100}
+            />
+          </div>
 
           <div className="mb-10 space-y-4">
             <h2 className="font-display text-xl font-semibold tracking-[-0.03em] text-slate-950">
