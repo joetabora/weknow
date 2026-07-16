@@ -93,6 +93,22 @@ Pipeline entry points:
 - Interface: [`collectors/types.ts`](collectors/types.ts)
 - Runner: [`scripts/ingest.ts`](scripts/ingest.ts) → [`lib/ingestion/run.ts`](lib/ingestion/run.ts)
 
+## Scheduled collection
+
+Hourly collection runs via GitHub Actions
+([`.github/workflows/collector.yml`](.github/workflows/collector.yml)).
+
+1. In the GitHub repo, open **Settings → Secrets and variables → Actions**.
+2. Add these repository secrets:
+   - `NEXT_PUBLIC_SUPABASE_URL`
+   - `SUPABASE_SERVICE_ROLE_KEY`
+3. The workflow runs every hour (UTC). To test manually, open
+   **Actions → Collector → Run workflow**.
+
+The scheduled job still uses `MockMarketCollector` until a live collector is
+added. On failure, the workflow logs a placeholder notification message (no
+Slack/email/webhook wired yet).
+
 ## Routes
 
 - `/` — dashboard
