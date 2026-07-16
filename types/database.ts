@@ -86,7 +86,22 @@ export type Database = {
       };
     };
     Views: Record<string, never>;
-    Functions: Record<string, never>;
+    Functions: {
+      get_market_movers: {
+        Args: {
+          lookback: string;
+          result_limit?: number;
+        };
+        Returns: {
+          market_id: string;
+          title: string;
+          current_yes_price: number;
+          previous_yes_price: number;
+          previous_captured_at: string;
+          change_abs: number;
+        }[];
+      };
+    };
     Enums: Record<string, never>;
     CompositeTypes: Record<string, never>;
   };

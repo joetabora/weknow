@@ -26,5 +26,17 @@ export type MarketPricePoint = {
   volume: number;
 };
 
+export type MarketMoverWindow = "24h" | "7d";
+
+export type MarketMover = {
+  marketId: string;
+  name: string;
+  currentYesProbability: number;
+  previousYesProbability: number;
+  change: number;
+  direction: "Increased" | "Decreased";
+  previousCapturedAt: string;
+};
+
 export type MarketSortField = "name" | "probability" | "volume" | "updatedAt";
 export type MarketSortDirection = "asc" | "desc";

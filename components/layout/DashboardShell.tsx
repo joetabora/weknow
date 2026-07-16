@@ -8,6 +8,7 @@ type DashboardShellProps = {
 const navigation = [
   { href: "/", label: "Dashboard" },
   { href: "/dashboard/markets", label: "Markets" },
+  { href: "/dashboard/movers", label: "Movers" },
 ];
 
 export function DashboardShell({ children }: DashboardShellProps) {
