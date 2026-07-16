@@ -109,6 +109,16 @@ The scheduled job still uses `MockMarketCollector` until a live collector is
 added. On failure, the workflow logs a placeholder notification message (no
 Slack/email/webhook wired yet).
 
+If ingestion fails with `TypeError: fetch failed`:
+
+1. Confirm `NEXT_PUBLIC_SUPABASE_URL` is exactly the Project URL from Supabase
+   **Settings → API** (example: `https://abcdefgh.supabase.co`) — no quotes,
+   no path, no trailing spaces.
+2. Confirm the project is not **paused** in the Supabase dashboard.
+3. Confirm `SUPABASE_SERVICE_ROLE_KEY` is the full `service_role` secret JWT.
+4. Re-run the workflow and inspect **Test Supabase connectivity** plus the
+   preflight lines in **Run collector ingestion**.
+
 ## Routes
 
 - `/` — dashboard

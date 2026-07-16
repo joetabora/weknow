@@ -1,11 +1,25 @@
 import type { CollectedMarket } from "@/types/collected-market";
 
-import { getSupabaseAdminClient } from "@/lib/database/supabase-admin";
+import {
+  formatUnknownError,
+  getSupabaseAdminClient,
+} from "@/lib/database/supabase-admin";
 
 export type StoreResult = {
   upserted: number;
   snapshots: number;
 };
+
+function formatPostgrestError(error: {
+  message: string;
+  details?: string | null;
+  hint?: string | null;
+  code?: string | null;
+}): string {
+  return [error.message, error.details, error.hint, error.code]
+    .filter(Boolean)
+    .join(" | ");
+}
 
 export async function storeCollectedMarkets(
   markets: CollectedMarket[],
@@ -16,25 +30,38 @@ export async function storeCollectedMarkets(
 
   for (const market of markets) {
     const now = new Date().toISOString();
-    const { data: upsertedMarket, error: upsertError } = await supabase
-      .from("markets")
-      .upsert(
-        {
-          external_id: market.externalId,
-          title: market.title,
-          description: market.description,
-          category: market.category,
-          status: market.status,
-          updated_at: now,
-        },
-        { onConflict: "external_id" },
-      )
-      .select("id")
-      .single();
 
-    if (upsertError) {
+    let upsertedMarket: { id: string } | null = null;
+    try {
+      const { data, error: upsertError } = await supabase
+        .from("markets")
+        .upsert(
+          {
+            external_id: market.externalId,
+            title: market.title,
+            description: market.description,
+            category: market.category,
+            status: market.status,
+            updated_at: now,
+          },
+          { onConflict: "external_id" },
+        )
+        .select("id")
+        .single();
+
+      if (upsertError) {
+        throw new Error(
+          `Failed to upsert market ${market.externalId}: ${formatPostgrestError(upsertError)}`,
+        );
+      }
+
+      upsertedMarket = data;
+    } catch (error) {
+      if (error instanceof Error && error.message.startsWith("Failed to upsert")) {
+        throw error;
+      }
       throw new Error(
-        `Failed to upsert market ${market.externalId}: ${upsertError.message}`,
+        `Failed to upsert market ${market.externalId}: ${formatUnknownError(error)}`,
       );
     }
 
@@ -59,7 +86,7 @@ export async function storeCollectedMarkets(
 
     if (snapshotError) {
       throw new Error(
-        `Failed to insert snapshot for ${market.externalId}: ${snapshotError.message}`,
+        `Failed to insert snapshot for ${market.externalId}: ${formatPostgrestError(snapshotError)}`,
       );
     }
 
