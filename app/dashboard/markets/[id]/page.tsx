@@ -111,10 +111,18 @@ export default async function MarketDetailPage({
           <dl className="mb-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             <div className="border border-slate-200 bg-white/70 px-4 py-4">
               <dt className="text-xs uppercase tracking-[0.12em] text-slate-500">
-                Probability
+                YES probability
               </dt>
               <dd className="mt-2 font-mono text-2xl text-slate-950">
-                {market.probability}%
+                {market.yesProbability}%
+              </dd>
+            </div>
+            <div className="border border-slate-200 bg-white/70 px-4 py-4">
+              <dt className="text-xs uppercase tracking-[0.12em] text-slate-500">
+                NO probability
+              </dt>
+              <dd className="mt-2 font-mono text-2xl text-slate-950">
+                {market.noProbability}%
               </dd>
             </div>
             <div className="border border-slate-200 bg-white/70 px-4 py-4">

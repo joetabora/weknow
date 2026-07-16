@@ -13,7 +13,8 @@ export type MarketDetail = {
   description: string | null;
   category: string;
   status: string;
-  probability: number;
+  yesProbability: number;
+  noProbability: number;
   volume: number;
   liquidity: number;
   updatedAt: string;

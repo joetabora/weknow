@@ -81,7 +81,7 @@ export async function getMarketById(id: string): Promise<MarketDetail | null> {
   const { data, error } = await supabase
     .from("markets")
     .select(
-      "id, title, description, category, status, updated_at, market_snapshots(yes_price, volume, liquidity, captured_at)",
+      "id, title, description, category, status, updated_at, market_snapshots(yes_price, no_price, volume, liquidity, captured_at)",
     )
     .eq("id", id)
     .order("captured_at", {
@@ -108,7 +108,8 @@ export async function getMarketById(id: string): Promise<MarketDetail | null> {
     description: row.description,
     category: row.category,
     status: row.status,
-    probability: latest ? probabilityFromYesPrice(latest.yes_price) : 0,
+    yesProbability: latest ? probabilityFromYesPrice(latest.yes_price) : 0,
+    noProbability: latest ? probabilityFromYesPrice(latest.no_price) : 0,
     volume: latest ? toNumber(latest.volume) : 0,
     liquidity: latest ? toNumber(latest.liquidity) : 0,
     updatedAt: latest?.captured_at ?? row.updated_at,
