@@ -6,7 +6,7 @@ type DashboardShellProps = {
 };
 
 const navigation = [
-  { href: "/", label: "Dashboard" },
+  { href: "/dashboard", label: "Dashboard" },
   { href: "/dashboard/markets", label: "Markets" },
   { href: "/dashboard/movers", label: "Movers" },
   { href: "/dashboard/watchlist", label: "Watchlist" },
@@ -20,7 +20,7 @@ export function DashboardShell({ children }: DashboardShellProps) {
     <div className="min-h-screen md:grid md:grid-cols-[240px_1fr]">
       <aside className="border-b border-slate-800 bg-slate-950 px-6 py-5 text-white md:min-h-screen md:border-b-0 md:border-r md:px-7 md:py-8">
         <Link
-          href="/"
+          href="/dashboard"
           className="inline-block font-display text-2xl font-semibold tracking-[-0.04em]"
         >
           weknow
