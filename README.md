@@ -1,9 +1,8 @@
 # weknow
 
-A private prediction market research dashboard. Phase 1 provides the web
-application shell, Supabase client configuration, and a placeholder market
-table. It does not connect to external market APIs or include prediction, AI,
-or trading features.
+A private prediction market research dashboard. Phase 2 displays markets stored
+in Supabase PostgreSQL. It does not connect to external market APIs or include
+prediction, AI, or trading features.
 
 ## Requirements
 
@@ -33,22 +32,32 @@ or trading features.
    NEXT_PUBLIC_SUPABASE_ANON_KEY=your-supabase-anon-key
    ```
 
-4. Start the development server:
+4. Set up the database (see below).
+
+5. Start the development server:
 
    ```bash
    npm run dev
    ```
 
-5. Open [http://localhost:3000](http://localhost:3000).
+6. Open [http://localhost:3000](http://localhost:3000).
 
-The Supabase client is configured in `lib/database/supabase.ts`. Phase 1 does
-not query database tables; `lib/database/markets.ts` supplies clearly labeled
-placeholder records for the UI.
+## Database setup
+
+Run these files in the Supabase SQL editor, in order:
+
+1. [`lib/database/schema.sql`](lib/database/schema.sql) — creates the `markets`
+   table and a public read policy (RLS).
+2. [`lib/database/seed.sql`](lib/database/seed.sql) — inserts clearly labeled
+   sample research rows (not live market data).
+
+The app reads markets through `getMarkets()` in `lib/database/markets.ts` using
+the Supabase client in `lib/database/supabase.ts`.
 
 ## Routes
 
 - `/` — dashboard
-- `/dashboard/markets` — placeholder market table
+- `/dashboard/markets` — markets table loaded from Supabase
 
 ## Production build
 

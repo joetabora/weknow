@@ -1,26 +1,31 @@
 import type { Market } from "@/types/market";
 
-// Placeholder records only. Supabase queries will be added in a later phase.
-export const placeholderMarkets: Market[] = [
-  {
-    name: "Will inflation fall below 3% this year?",
-    category: "Economics",
-    probability: 62,
-    volume: 148250,
-    updatedAt: "2026-07-16T15:12:00.000Z",
-  },
-  {
-    name: "Will a major climate bill pass this year?",
-    category: "Policy",
-    probability: 41,
-    volume: 86400,
-    updatedAt: "2026-07-16T14:48:00.000Z",
-  },
-  {
-    name: "Will the next lunar mission launch on schedule?",
-    category: "Science",
-    probability: 73,
-    volume: 52750,
-    updatedAt: "2026-07-16T13:30:00.000Z",
-  },
-];
+import { getSupabaseClient } from "@/lib/database/supabase";
+
+type MarketRow = {
+  name: string;
+  category: string;
+  probability: number | string;
+  volume: number | string;
+  updated_at: string;
+};
+
+export async function getMarkets(): Promise<Market[]> {
+  const supabase = getSupabaseClient();
+  const { data, error } = await supabase
+    .from("markets")
+    .select("name, category, probability, volume, updated_at")
+    .order("updated_at", { ascending: false });
+
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  return ((data ?? []) as MarketRow[]).map((row) => ({
+    name: row.name,
+    category: row.category,
+    probability: Number(row.probability),
+    volume: Number(row.volume),
+    updatedAt: row.updated_at,
+  }));
+}
