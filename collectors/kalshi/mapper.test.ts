@@ -44,6 +44,7 @@ describe("mapKalshiMarket", () => {
     event_ticker: "KXTEST",
     yes_sub_title: "Yes outcome",
     status: "active",
+    close_time: "2026-08-01T12:00:00Z",
     yes_bid_dollars: "0.6100",
     no_bid_dollars: "0.3900",
     volume_fp: "1250.50",
@@ -68,6 +69,7 @@ describe("mapKalshiMarket", () => {
       noPrice: 0.39,
       volume: 1250.5,
       liquidity: 0,
+      expirationTime: "2026-08-01T12:00:00Z",
       capturedAt: "2026-07-16T19:00:00.000Z",
     });
   });

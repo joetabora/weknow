@@ -5,6 +5,7 @@ export type MarketRow = {
   description: string | null;
   category: string;
   status: string;
+  expiration_time: string | null;
   created_at: string;
   updated_at: string;
 };
@@ -26,6 +27,7 @@ export type MarketInsert = {
   description?: string | null;
   category: string;
   status: string;
+  expiration_time?: string | null;
   created_at?: string;
   updated_at?: string;
 };
@@ -37,6 +39,7 @@ export type MarketUpdate = {
   description?: string | null;
   category?: string;
   status?: string;
+  expiration_time?: string | null;
   created_at?: string;
   updated_at?: string;
 };

@@ -12,6 +12,7 @@ const collectedMarketSchema = z.object({
   noPrice: z.number().min(0).max(1),
   volume: z.number().min(0),
   liquidity: z.number().min(0),
+  expirationTime: z.string().min(1),
   capturedAt: z.string().datetime().optional(),
 });
 

@@ -5,7 +5,13 @@ export type Market = {
   probability: number;
   volume: number;
   updatedAt: string;
+  expirationTime: string | null;
+  rawStatus: string;
+  timelineStatus: TimelineStatus;
+  timeRemainingLabel: string;
 };
+
+export type TimelineStatus = "Open" | "Expiring Soon" | "Resolved";
 
 export type MarketDetail = {
   id: string;
@@ -18,6 +24,11 @@ export type MarketDetail = {
   volume: number;
   liquidity: number;
   updatedAt: string;
+  createdAt: string;
+  expirationTime: string | null;
+  resolvedAt: string | null;
+  timelineStatus: TimelineStatus;
+  timeRemainingLabel: string;
 };
 
 export type MarketPricePoint = {
@@ -75,7 +86,10 @@ export type WatchlistItem = {
   lastProbabilityChange: number | null;
   addedAt: string;
   notes: string;
+  expirationTime: string | null;
 };
+
+export type WatchlistSort = "endingSoon" | "recentlyAdded" | "largestMovement";
 
 export type JournalConfidence = "Low" | "Medium" | "High";
 

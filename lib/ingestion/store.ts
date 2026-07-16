@@ -42,6 +42,7 @@ export async function storeCollectedMarkets(
             description: market.description,
             category: market.category,
             status: market.status,
+            expiration_time: market.expirationTime,
             updated_at: now,
           },
           { onConflict: "external_id" },

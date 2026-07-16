@@ -14,6 +14,7 @@ const MOCK_MARKETS: CollectedMarket[] = [
     noPrice: 0.42,
     volume: 1_245_000,
     liquidity: 82_400,
+    expirationTime: "2026-09-01T00:00:00.000Z",
   },
   {
     externalId: "mock-cpi-below-2-5",
@@ -26,6 +27,7 @@ const MOCK_MARKETS: CollectedMarket[] = [
     noPrice: 0.69,
     volume: 486_200,
     liquidity: 41_150,
+    expirationTime: "2026-07-31T00:00:00.000Z",
   },
   {
     externalId: "mock-climate-bill-2026",
@@ -38,6 +40,7 @@ const MOCK_MARKETS: CollectedMarket[] = [
     noPrice: 0.78,
     volume: 312_800,
     liquidity: 28_900,
+    expirationTime: "2026-12-31T00:00:00.000Z",
   },
   {
     externalId: "mock-lunar-launch",
@@ -50,6 +53,7 @@ const MOCK_MARKETS: CollectedMarket[] = [
     noPrice: 0.53,
     volume: 198_450,
     liquidity: 19_200,
+    expirationTime: "2026-10-15T00:00:00.000Z",
   },
   {
     externalId: "mock-sp500-ath",
@@ -62,6 +66,7 @@ const MOCK_MARKETS: CollectedMarket[] = [
     noPrice: 0.36,
     volume: 2_018_700,
     liquidity: 125_000,
+    expirationTime: "2026-07-31T23:59:59.000Z",
   },
   {
     externalId: "mock-ai-regulation",
@@ -74,6 +79,7 @@ const MOCK_MARKETS: CollectedMarket[] = [
     noPrice: 0.61,
     volume: 275_600,
     liquidity: 33_400,
+    expirationTime: "2026-12-31T00:00:00.000Z",
   },
   {
     externalId: "mock-nfl-superbowl",
@@ -86,6 +92,7 @@ const MOCK_MARKETS: CollectedMarket[] = [
     noPrice: 0.49,
     volume: 890_100,
     liquidity: 67_800,
+    expirationTime: "2027-02-15T00:00:00.000Z",
   },
 ];
 

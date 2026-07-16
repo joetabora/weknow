@@ -19,9 +19,11 @@ type WatchlistJoinRow = {
   markets:
     | {
         title: string;
+        expiration_time: string | null;
       }
     | {
         title: string;
+        expiration_time: string | null;
       }[]
     | null;
 };
@@ -40,6 +42,18 @@ function marketTitle(
     return markets[0]?.title ?? "Unknown market";
   }
   return markets.title;
+}
+
+function marketExpiration(
+  markets: WatchlistJoinRow["markets"],
+): string | null {
+  if (!markets) {
+    return null;
+  }
+  if (Array.isArray(markets)) {
+    return markets[0]?.expiration_time ?? null;
+  }
+  return markets.expiration_time;
 }
 
 export async function isMarketWatched(marketId: string): Promise<boolean> {
@@ -96,6 +110,7 @@ function toWatchlistItem(
     lastProbabilityChange,
     addedAt: row.created_at,
     notes: row.notes,
+    expirationTime: marketExpiration(row.markets),
   };
 }
 
@@ -103,7 +118,7 @@ export async function getWatchlist(): Promise<WatchlistItem[]> {
   const supabase = getSupabaseClient();
   const { data, error } = await supabase
     .from("market_watchlist")
-    .select("id, market_id, created_at, notes, markets(title)")
+    .select("id, market_id, created_at, notes, markets(title, expiration_time)")
     .eq("user_id", SINGLE_USER_ID)
     .order("created_at", { ascending: false });
 

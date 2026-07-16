@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 
-import { WatchlistTable } from "@/components/watchlist/WatchlistTable";
+import { WatchlistView } from "@/components/watchlist/WatchlistView";
 import { getWatchlist } from "@/lib/database/watchlist";
 import type { WatchlistItem } from "@/types/market";
 
@@ -36,7 +37,8 @@ export default async function WatchlistPage() {
         </div>
         <p className="max-w-sm text-sm leading-6 text-slate-500">
           Saved markets to monitor, with current YES probability, recent
-          change, and personal notes.
+          change, and personal notes. Sort by ending soon, recently added, or
+          largest movement.
         </p>
       </div>
 
@@ -49,7 +51,13 @@ export default async function WatchlistPage() {
           <p className="mt-1 text-rose-700">{loadError}</p>
         </div>
       ) : (
-        <WatchlistTable items={items} />
+        <Suspense
+          fallback={
+            <p className="text-sm text-slate-500">Loading watchlist…</p>
+          }
+        >
+          <WatchlistView items={items} />
+        </Suspense>
       )}
     </section>
   );

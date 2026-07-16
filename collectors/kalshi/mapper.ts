@@ -50,6 +50,7 @@ export function mapKalshiMarket(params: {
     volume: parseFixedPointNumber(market.volume_fp, "volume_fp"),
     // Official docs: liquidity_dollars is deprecated and always "0.0000".
     liquidity: 0,
+    expirationTime: market.close_time,
     capturedAt,
   };
 }

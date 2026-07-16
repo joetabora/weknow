@@ -6,6 +6,7 @@ import type {
   Market,
   MarketSortDirection,
   MarketSortField,
+  TimelineStatus,
 } from "@/types/market";
 
 type MarketsTableProps = {
@@ -28,6 +29,13 @@ const timeFormatter = new Intl.DateTimeFormat("en-US", {
   minute: "2-digit",
   timeZone: "UTC",
   timeZoneName: "short",
+});
+
+const dateFormatter = new Intl.DateTimeFormat("en-US", {
+  month: "short",
+  day: "numeric",
+  year: "numeric",
+  timeZone: "UTC",
 });
 
 function SortHeader({
@@ -73,6 +81,23 @@ function sortAria(
   return direction === "asc" ? "ascending" : "descending";
 }
 
+function TimelineBadge({ status }: { status: TimelineStatus }) {
+  const className =
+    status === "Resolved"
+      ? "bg-slate-100 text-slate-700"
+      : status === "Expiring Soon"
+        ? "bg-amber-50 text-amber-800"
+        : "bg-cyan-50 text-cyan-800";
+
+  return (
+    <span
+      className={`inline-flex px-2 py-1 text-xs font-medium tracking-wide ${className}`}
+    >
+      {status}
+    </span>
+  );
+}
+
 export function MarketsTable({
   markets,
   sort,
@@ -81,7 +106,7 @@ export function MarketsTable({
 }: MarketsTableProps) {
   return (
     <div className="overflow-x-auto border-y border-slate-200">
-      <table className="w-full min-w-[780px] border-collapse text-left">
+      <table className="w-full min-w-[980px] border-collapse text-left">
         <thead>
           <tr className="text-xs uppercase tracking-[0.12em] text-slate-500">
             <th
@@ -98,6 +123,9 @@ export function MarketsTable({
               />
             </th>
             <th className="px-6 py-4 font-medium">Category</th>
+            <th className="px-6 py-4 font-medium">Status</th>
+            <th className="px-6 py-4 font-medium">Expiration</th>
+            <th className="px-6 py-4 font-medium">Time remaining</th>
             <th
               className="px-6 py-4 text-right font-medium"
               aria-sort={sortAria("probability", sort, direction)}
@@ -154,6 +182,15 @@ export function MarketsTable({
                 </Link>
               </td>
               <td className="px-6 py-5">{market.category}</td>
+              <td className="px-6 py-5">
+                <TimelineBadge status={market.timelineStatus} />
+              </td>
+              <td className="px-6 py-5 font-mono text-xs">
+                {market.expirationTime
+                  ? dateFormatter.format(new Date(market.expirationTime))
+                  : "—"}
+              </td>
+              <td className="px-6 py-5 text-sm">{market.timeRemainingLabel}</td>
               <td className="px-6 py-5 text-right font-mono text-slate-950">
                 {market.probability}%
               </td>

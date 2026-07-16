@@ -16,6 +16,7 @@ function sampleMarket(ticker: string) {
     event_ticker: "KXTEST",
     yes_sub_title: "Outcome A",
     status: "active",
+    close_time: "2026-08-01T12:00:00Z",
     yes_bid_dollars: "0.5500",
     no_bid_dollars: "0.4500",
     volume_fp: "100.00",

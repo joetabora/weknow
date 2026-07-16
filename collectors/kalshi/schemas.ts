@@ -26,6 +26,7 @@ export const kalshiMarketSchema = z.object({
   event_ticker: z.string().min(1),
   yes_sub_title: z.string(),
   status: kalshiMarketStatusSchema,
+  close_time: z.string().min(1),
   yes_bid_dollars: fixedPointDollarsSchema,
   no_bid_dollars: fixedPointDollarsSchema,
   volume_fp: fixedPointCountSchema,

@@ -8,5 +8,6 @@ export type CollectedMarket = {
   noPrice: number;
   volume: number;
   liquidity: number;
+  expirationTime: string;
   capturedAt?: string;
 };
