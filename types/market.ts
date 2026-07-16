@@ -67,5 +67,15 @@ export type CalibrationBucket = {
   actualYesRate: number | null;
 };
 
+export type WatchlistItem = {
+  id: string;
+  marketId: string;
+  title: string;
+  currentYesProbability: number;
+  lastProbabilityChange: number | null;
+  addedAt: string;
+  notes: string;
+};
+
 export type MarketSortField = "name" | "probability" | "volume" | "updatedAt";
 export type MarketSortDirection = "asc" | "desc";

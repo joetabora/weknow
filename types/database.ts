@@ -91,6 +91,30 @@ export type MarketResolutionUpdate = {
   created_at?: string;
 };
 
+export type MarketWatchlistRow = {
+  id: string;
+  user_id: string;
+  market_id: string;
+  created_at: string;
+  notes: string;
+};
+
+export type MarketWatchlistInsert = {
+  id?: string;
+  user_id: string;
+  market_id: string;
+  created_at?: string;
+  notes?: string;
+};
+
+export type MarketWatchlistUpdate = {
+  id?: string;
+  user_id?: string;
+  market_id?: string;
+  created_at?: string;
+  notes?: string;
+};
+
 export type Database = {
   public: {
     Tables: {
@@ -123,6 +147,20 @@ export type Database = {
             foreignKeyName: "market_resolutions_market_id_fkey";
             columns: ["market_id"];
             isOneToOne: true;
+            referencedRelation: "markets";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      market_watchlist: {
+        Row: MarketWatchlistRow;
+        Insert: MarketWatchlistInsert;
+        Update: MarketWatchlistUpdate;
+        Relationships: [
+          {
+            foreignKeyName: "market_watchlist_market_id_fkey";
+            columns: ["market_id"];
+            isOneToOne: false;
             referencedRelation: "markets";
             referencedColumns: ["id"];
           },

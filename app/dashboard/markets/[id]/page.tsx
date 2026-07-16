@@ -4,10 +4,12 @@ import { notFound } from "next/navigation";
 
 import { PriceChart } from "@/components/markets/PriceChart";
 import { SnapshotHistoryTable } from "@/components/markets/SnapshotHistoryTable";
+import { WatchlistToggle } from "@/components/watchlist/WatchlistToggle";
 import {
   getMarketById,
   getMarketPriceHistory,
 } from "@/lib/database/markets";
+import { isMarketWatched } from "@/lib/database/watchlist";
 import type { MarketDetail, MarketPricePoint } from "@/types/market";
 
 type MarketDetailPageProps = {
@@ -56,11 +58,15 @@ export default async function MarketDetailPage({
   let loadError: string | null = null;
   let market: MarketDetail | null = null;
   let history: MarketPricePoint[] = [];
+  let watched = false;
 
   try {
     market = await getMarketById(id);
     if (market) {
-      history = await getMarketPriceHistory(id);
+      [history, watched] = await Promise.all([
+        getMarketPriceHistory(id),
+        isMarketWatched(id),
+      ]);
     }
   } catch (error) {
     loadError =
@@ -94,18 +100,21 @@ export default async function MarketDetailPage({
         </div>
       ) : market ? (
         <>
-          <div className="mb-10">
-            <p className="text-xs font-medium uppercase tracking-[0.16em] text-cyan-700">
-              Market detail
-            </p>
-            <h1 className="mt-3 max-w-4xl font-display text-3xl font-semibold tracking-[-0.04em] text-slate-950 sm:text-4xl">
-              {market.title}
-            </h1>
-            {market.description ? (
-              <p className="mt-4 max-w-3xl text-sm leading-6 text-slate-600">
-                {market.description}
+          <div className="mb-10 flex flex-col gap-5 sm:flex-row sm:items-start sm:justify-between">
+            <div>
+              <p className="text-xs font-medium uppercase tracking-[0.16em] text-cyan-700">
+                Market detail
               </p>
-            ) : null}
+              <h1 className="mt-3 max-w-4xl font-display text-3xl font-semibold tracking-[-0.04em] text-slate-950 sm:text-4xl">
+                {market.title}
+              </h1>
+              {market.description ? (
+                <p className="mt-4 max-w-3xl text-sm leading-6 text-slate-600">
+                  {market.description}
+                </p>
+              ) : null}
+            </div>
+            <WatchlistToggle marketId={market.id} isWatched={watched} />
           </div>
 
           <dl className="mb-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
